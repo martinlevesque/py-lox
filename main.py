@@ -4,7 +4,7 @@ import mymodule
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-    print(mymodule.sub(1,2))
+    print(mymodule.sub(14,2))
 
 
 # Press the green button in the gutter to run the script.
