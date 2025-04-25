@@ -1,7 +1,0 @@
-# mymodule.pyx
-
-def add(int a, int b):
-    return a + b
-
-def sub(int a, int b):
-    return a - b

@@ -1,11 +1,9 @@
 from setuptools import setup, Extension
-from Cython.Build import cythonize
 
-ext = Extension(
-    name="mymodule",  # no package prefix
-    sources=["somelibs/mymodule.pyx"],
-)
+module = Extension('mymodule', sources=['somelibs/mymodule.c'])
 
 setup(
-    ext_modules=cythonize(ext),
+    name='mymodule',
+    version='1.0',
+    ext_modules=[module],
 )

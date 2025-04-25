@@ -1,4 +1,5 @@
 build
 .idea
 *.so
-*.c
+*.egg-info
+dist
