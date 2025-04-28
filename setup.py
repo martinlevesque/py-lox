@@ -1,9 +1,9 @@
 from setuptools import setup, Extension
 
-module = Extension('mymodule', sources=['somelibs/mymodule.c'])
+module = Extension('scanner', sources=['interpreter/scanner.c'])
 
 setup(
-    name='mymodule',
+    name='loxinterpreter',
     version='1.0',
     ext_modules=[module],
 )

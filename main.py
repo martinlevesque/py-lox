@@ -1,14 +1,41 @@
 
-import mymodule
+import sys
+import scanner
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-    print(mymodule.add(14,20000))
+# https://craftinginterpreters.com/scanning.html#the-interpreter-framework
 
+def run(content: str):
+    print(f"will run {content}")
 
-# Press the green button in the gutter to run the script.
+def run_file(filename: str):
+    print(f"will run file {filename}")
+
+    with open(filename, "r") as file:
+        content = file.read()
+        run(content)
+
+def run_prompt():
+    # todo
+    pass
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    if len(sys.argv) > 2:
+        print("Usage: plox [script]")
+        sys.exit(64)
+    elif len(sys.argv) == 2:
+        print(sys.argv)
+        run_file(sys.argv[1])
+    else:
+        run_prompt()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+    #if (args.length > 1) {
+    #System.out.println("Usage: jlox [script]");
+    #System.exit(64);
+    #} else if (args.length == 1) {
+    #runFile(args[0]);
+    #} else {
+    #runPrompt();
+    #}
+
+

@@ -38,17 +38,17 @@ typedef struct {
 } Token;
 
 // A simple function: add(a, b)
-/*
-static PyObject* mymodule_add(PyObject* self, PyObject* args) {
-    int a, b;
+static PyObject* scanner_mytest(PyObject* self, PyObject* args) {
+    const char* input;
 
-    if (!PyArg_ParseTuple(args, "ii", &a, &b)) {
+    if (!PyArg_ParseTuple(args, "s", &input)) {
         return NULL;
     }
 
-    return PyLong_FromLong(a + TOKEN_TYPE_SPACE);
+    // You can now work with 'input' as a C string
+    // For now, just return the string length as an example
+    return PyLong_FromSize_t(1);
 }
-*/
 
 static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
     // Example hardcoded array
@@ -88,20 +88,20 @@ static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
 
 // Method definitions
 static PyMethodDef MyModuleMethods[] = {
-    {"add", mymodule_get_tokens, METH_VARARGS, "Add two integers"},
+    {"mytest", scanner_mytest, METH_VARARGS, "Add two integers"},
     {NULL, NULL, 0, NULL}
 };
 
 // Module definition (Python 3)
 static struct PyModuleDef mymodule_definition = {
     PyModuleDef_HEAD_INIT,
-    "mymodule",        // name of module
+    "scanner",        // name of module
     "A simple example module",  // module docstring
     -1,                // size of per-interpreter state of the module, -1 means global
     MyModuleMethods
 };
 
 // Module initialization
-PyMODINIT_FUNC PyInit_mymodule(void) {
+PyMODINIT_FUNC PyInit_scanner(void) {
     return PyModule_Create(&mymodule_definition);
 }
