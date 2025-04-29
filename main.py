@@ -1,41 +1,39 @@
-
 import sys
 import scanner
+import logger
 
-# https://craftinginterpreters.com/scanning.html#the-interpreter-framework
+# https://craftinginterpreters.com/scanning.html#error-handling
+
 
 def run(content: str):
-    print(f"will run {content}")
+    tokens: list = scanner.scan_tokens(content)
+
+    if not tokens:
+        logger.fatal(f"no token received, content={content}")
+
+    for token in tokens:
+        logger.out(f"{token}\n")
+
 
 def run_file(filename: str):
-    print(f"will run file {filename}")
-
     with open(filename, "r") as file:
         content = file.read()
         run(content)
 
+
 def run_prompt():
     # todo
-    pass
+    while True:
+        logger.out("> ")
+        line = sys.stdin.readline()
+        run(line)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     if len(sys.argv) > 2:
-        print("Usage: plox [script]")
+        logger.out("Usage: plox [script]\n")
         sys.exit(64)
     elif len(sys.argv) == 2:
-        print(sys.argv)
         run_file(sys.argv[1])
     else:
         run_prompt()
-
-
-    #if (args.length > 1) {
-    #System.out.println("Usage: jlox [script]");
-    #System.exit(64);
-    #} else if (args.length == 1) {
-    #runFile(args[0]);
-    #} else {
-    #runPrompt();
-    #}
-
-

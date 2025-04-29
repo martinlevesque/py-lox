@@ -37,20 +37,7 @@ typedef struct {
     const char* err;  // NULL if no error
 } Token;
 
-// A simple function: add(a, b)
-static PyObject* scanner_mytest(PyObject* self, PyObject* args) {
-    const char* input;
-
-    if (!PyArg_ParseTuple(args, "s", &input)) {
-        return NULL;
-    }
-
-    // You can now work with 'input' as a C string
-    // For now, just return the string length as an example
-    return PyLong_FromSize_t(1);
-}
-
-static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
+static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
     // Example hardcoded array
     Token tokens[] = {
         {1, "if", "", 'i', 1, NULL},
@@ -59,12 +46,14 @@ static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
     int token_count = sizeof(tokens) / sizeof(Token);
 
     PyObject* py_list = PyList_New(token_count);
+
     if (!py_list) return NULL;
 
     for (int i = 0; i < token_count; i++) {
         Token t = tokens[i];
 
         PyObject* py_token = PyDict_New();
+
         if (!py_token) {
             Py_DECREF(py_list);
             return NULL;
@@ -75,6 +64,7 @@ static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
         PyDict_SetItemString(py_token, "literalStr", PyUnicode_FromString(t.literalStr));
         PyDict_SetItemString(py_token, "inputChar", PyLong_FromUnsignedLong(t.inputChar));
         PyDict_SetItemString(py_token, "lineNumber", PyLong_FromSize_t(t.lineNumber));
+
         if (t.err)
             PyDict_SetItemString(py_token, "err", PyUnicode_FromString(t.err));
         else
@@ -88,7 +78,7 @@ static PyObject* mymodule_get_tokens(PyObject* self, PyObject* args) {
 
 // Method definitions
 static PyMethodDef MyModuleMethods[] = {
-    {"mytest", scanner_mytest, METH_VARARGS, "Add two integers"},
+    {"scan_tokens", scanner_scan_tokens, METH_VARARGS, "Add two integers"},
     {NULL, NULL, 0, NULL}
 };
 
