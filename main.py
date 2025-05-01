@@ -33,7 +33,6 @@ class Interpreter:
         self.report(line=line, where="", message=message)
 
     def report(self, line: int = 0, where: str = "", message: str = ""):
-        # [line " + line + "] Error" + where + ": " + message
         print(
             f"[line {line}] Error {where}: {message}\n",
             file=sys.stderr,
