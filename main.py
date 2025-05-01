@@ -1,39 +1,53 @@
 import sys
 import scanner
-import logger
 
-# https://craftinginterpreters.com/scanning.html#error-handling
-
-
-def run(content: str):
-    tokens: list = scanner.scan_tokens(content)
-
-    if not tokens:
-        logger.fatal(f"no token received, content={content}")
-
-    for token in tokens:
-        logger.out(f"{token}\n")
+# https://craftinginterpreters.com/scanning.html#lexemes-and-tokens
 
 
-def run_file(filename: str):
-    with open(filename, "r") as file:
-        content = file.read()
-        run(content)
+class Interpreter:
+    def __init__(self):
+        self.has_error: bool = False
 
+    def run(self, content: str):
+        tokens: list = scanner.scan_tokens(content)
 
-def run_prompt():
-    # todo
-    while True:
-        logger.out("> ")
-        line = sys.stdin.readline()
-        run(line)
+    def run_file(self, filename: str):
+        with open(filename, "r") as file:
+            content = file.read()
+            self.run(content)
+
+            if self.has_error:
+                sys.exit(65)
+
+    def run_prompt(self):
+        while True:
+            self.out("> ")
+            line = sys.stdin.readline()
+            self.run(line)
+            self.has_error = False
+
+    def out(self, content: str):
+        print(content, end="", flush=True)
+
+    def error(self, line: int, message: str):
+        self.report(line=line, where="", message=message)
+
+    def report(self, line: int = 0, where: str = "", message: str = ""):
+        print(
+            f"[line {line}] Error {where}: {message}\n",
+            file=sys.stderr,
+            end="",
+            flush=True,
+        )
 
 
 if __name__ == "__main__":
+    interpreter = Interpreter()
+
     if len(sys.argv) > 2:
         logger.out("Usage: plox [script]\n")
         sys.exit(64)
     elif len(sys.argv) == 2:
-        run_file(sys.argv[1])
+        interpreter.run_file(sys.argv[1])
     else:
-        run_prompt()
+        interpreter.run_prompt()
