@@ -1,7 +1,7 @@
 import sys
 import scanner
 
-# https://craftinginterpreters.com/scanning.html#error-handling
+# https://craftinginterpreters.com/scanning.html#lexemes-and-tokens
 
 
 class Interpreter:
