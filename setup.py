@@ -1,6 +1,9 @@
-from setuptools import setup
-from Cython.Build import cythonize
+from setuptools import setup, Extension
+
+module = Extension("scanner", sources=["interpreter/scanner.c"])
 
 setup(
-    ext_modules=cythonize("mymodule.pyx"),
+    name="loxinterpreter",
+    version="1.0",
+    ext_modules=[module],
 )

@@ -1,14 +1,39 @@
+import sys
+import scanner
+import logger
 
-import mymodule
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-    print(mymodule.sub(1,2))
+# https://craftinginterpreters.com/scanning.html#error-handling
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def run(content: str):
+    tokens: list = scanner.scan_tokens(content)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if not tokens:
+        logger.fatal(f"no token received, content={content}")
+
+    for token in tokens:
+        logger.out(f"{token}\n")
+
+
+def run_file(filename: str):
+    with open(filename, "r") as file:
+        content = file.read()
+        run(content)
+
+
+def run_prompt():
+    # todo
+    while True:
+        logger.out("> ")
+        line = sys.stdin.readline()
+        run(line)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        logger.out("Usage: plox [script]\n")
+        sys.exit(64)
+    elif len(sys.argv) == 2:
+        run_file(sys.argv[1])
+    else:
+        run_prompt()
