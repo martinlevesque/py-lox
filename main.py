@@ -1,7 +1,7 @@
 import sys
 import scanner
 
-# https://craftinginterpreters.com/scanning.html#lexemes-and-tokens
+# https://craftinginterpreters.com/scanning.html#the-scanner-class
 
 
 class Interpreter:
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     interpreter = Interpreter()
 
     if len(sys.argv) > 2:
-        logger.out("Usage: plox [script]\n")
+        interpreter.out("Usage: plox [script]\n")
         sys.exit(64)
     elif len(sys.argv) == 2:
         interpreter.run_file(sys.argv[1])

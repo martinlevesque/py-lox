@@ -37,7 +37,25 @@ typedef struct {
     const char* err;  // NULL if no error
 } Token;
 
+typedef struct {
+    int start;
+    int current;
+    int line;
+    const char* source;
+} Scanner;
+
+int isAtEnd() {
+}
+
 static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
+    const char* source;
+
+    if (!PyArg_ParseTuple(args, "s", &source)) {
+        return NULL;  // Error already set
+    }
+
+    Scanner scanner = { .start = 0, .current = 0, .line = 1, .source = source };
+
     // Example hardcoded array
     Token tokens[] = {
         {1, "if", "", 'i', 1, NULL},
