@@ -41,20 +41,29 @@ typedef struct {
     int start;
     int current;
     int line;
-    const char* source;
+    const char* source; // raw source code
+    int sourceLength;
 } Scanner;
 
-int isAtEnd() {
+int scannerIsAtEnd(Scanner scanner) {
+    return scanner.current >= scanner.sourceLength;
+}
+
+char scannerAdvance(Scanner* scanner) {
+    return scanner->source[scanner->current++];
+}
+
+void scanToken(Scanner* scanner) {
+    char c = scannerAdvance(scanner);
 }
 
 static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
-    const char* source;
+    Scanner scanner = { .start = 0, .current = 0, .line = 1 };
 
-    if (!PyArg_ParseTuple(args, "s", &source)) {
+    if (!PyArg_ParseTuple(args, "s", &scanner.source)) {
         return NULL;  // Error already set
     }
-
-    Scanner scanner = { .start = 0, .current = 0, .line = 1, .source = source };
+    scanner.sourceLength = strlen(scanner.source);
 
     // Example hardcoded array
     Token tokens[] = {
@@ -62,6 +71,11 @@ static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
         {2, "else", "", 'e', 1, "Unexpected token"},
     };
     int token_count = sizeof(tokens) / sizeof(Token);
+
+    while (!scannerIsAtEnd(scanner)) {
+      scanner.start = scanner.current;
+      scanToken(&scanner);
+    }
 
     PyObject* py_list = PyList_New(token_count);
 

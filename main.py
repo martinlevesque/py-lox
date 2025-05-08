@@ -3,6 +3,7 @@ import scanner
 
 # https://craftinginterpreters.com/scanning.html#the-scanner-class
 
+
 class Interpreter:
     def __init__(self):
         self.has_error: bool = False
