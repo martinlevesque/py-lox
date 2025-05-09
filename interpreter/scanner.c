@@ -1,6 +1,6 @@
 #include <Python.h>
 
-enum TokenType {
+typedef enum TokenType {
     TOKEN_TYPE_LEFT_PAREN,
     TOKEN_TYPE_RIGHT_PAREN,
     TOKEN_TYPE_LEFT_BRACE,
@@ -26,14 +26,14 @@ enum TokenType {
     TOKEN_TYPE_INVALID,
     TOKEN_TYPE_NONE,
     TOKEN_TYPE_EOF
-};
+} TokenType;
 
 typedef struct {
     int type;
     const char* lexeme;
     const char* literalStr;
     unsigned char inputChar;
-    size_t lineNumber;
+    size_t line;
     const char* err;  // NULL if no error
 } Token;
 
@@ -55,6 +55,38 @@ char scannerAdvance(Scanner* scanner) {
 
 void scanToken(Scanner* scanner) {
     char c = scannerAdvance(scanner);
+
+    switch (c) {
+      case '(': scannerAddToken(scanner, TOKEN_TYPE_LEFT_PAREN); break;
+      case ')': scannerAddToken(scanner, TOKEN_TYPE_RIGHT_PAREN); break;
+      case '{': scannerAddToken(scanner, TOKEN_TYPE_LEFT_BRACE); break;
+      case '}': scannerAddToken(scanner, TOKEN_TYPE_RIGHT_BRACE); break;
+      case ',': scannerAddToken(scanner, TOKEN_TYPE_COMMA); break;
+      case '.': scannerAddToken(scanner, TOKEN_TYPE_DOT); break;
+      case '-': scannerAddToken(scanner, TOKEN_TYPE_MINUS); break;
+      case '+': scannerAddToken(scanner, TOKEN_TYPE_PLUS); break;
+      case ';': scannerAddToken(scanner, TOKEN_TYPE_SEMICOLON); break;
+      case '*': scannerAddToken(scanner, TOKEN_TYPE_STAR); break;
+    }
+}
+
+void scannerAddToken(Scanner* scanner, TokenType tokenType) {
+    scannerAddTokenLiteral(scanner, tokenType, NULL);
+}
+
+void scannerAddTokenLiteral(Scanner* scanner, TokenType tokenType, const char* literal) {
+/*
+edef struct {
+    int type;
+    const char* lexeme;
+    const char* literalStr;
+    unsigned char inputChar;
+    size_t lineNumber;
+    const char* err;  // NULL if no error
+} Token;
+*/
+
+    Token token = { .type = tokenType, .literalStr = literal, .lexeme = NULL, .line = scanner->line };
 }
 
 static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
@@ -95,7 +127,7 @@ static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
         PyDict_SetItemString(py_token, "lexeme", PyUnicode_FromString(t.lexeme));
         PyDict_SetItemString(py_token, "literalStr", PyUnicode_FromString(t.literalStr));
         PyDict_SetItemString(py_token, "inputChar", PyLong_FromUnsignedLong(t.inputChar));
-        PyDict_SetItemString(py_token, "lineNumber", PyLong_FromSize_t(t.lineNumber));
+        PyDict_SetItemString(py_token, "line", PyLong_FromSize_t(t.line));
 
         if (t.err)
             PyDict_SetItemString(py_token, "err", PyUnicode_FromString(t.err));
