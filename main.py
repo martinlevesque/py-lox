@@ -1,4 +1,6 @@
 import sys
+import time
+
 import scanner
 
 # https://craftinginterpreters.com/scanning.html#the-scanner-class
@@ -9,7 +11,10 @@ class Interpreter:
         self.has_error: bool = False
 
     def run(self, content: str):
+        t1 = time.time()
         tokens: list = scanner.scan_tokens(content)
+        t2 = time.time()
+        print(f"tokens = {tokens}, took = {t2-t1}")
 
     def run_file(self, filename: str):
         with open(filename, "r") as file:
