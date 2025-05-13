@@ -3,7 +3,7 @@ import time
 
 import scanner
 
-# https://craftinginterpreters.com/scanning.html#the-scanner-class
+# https://craftinginterpreters.com/scanning.html#lexical-errors
 
 
 class Interpreter:
