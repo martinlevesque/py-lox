@@ -173,7 +173,8 @@ static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
         PyList_SET_ITEM(py_list, i, py_token);  // steals ref to py_token
 
         ++i;
-        // freeToken(token);
+
+        freeToken(token);
     }
 
     if (i < token_count) {
