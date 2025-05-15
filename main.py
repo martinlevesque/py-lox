@@ -14,7 +14,12 @@ class Interpreter:
         t1 = time.time()
         tokens: list = scanner.scan_tokens(content)
         t2 = time.time()
-        print(f"tokens = {tokens}, took = {t2-t1}")
+
+        for token in tokens:
+            if token["err"]:
+                print(f"err -> {token}")
+            else:
+                print(f"{token}")
 
     def run_file(self, filename: str):
         with open(filename, "r") as file:

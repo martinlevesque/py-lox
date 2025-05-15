@@ -2,6 +2,7 @@
 #include <string.h>
 
 typedef enum TokenType {
+    TOKEN_TYPE_ERR,
     TOKEN_TYPE_LEFT_PAREN,
     TOKEN_TYPE_RIGHT_PAREN,
     TOKEN_TYPE_LEFT_BRACE,
@@ -84,16 +85,16 @@ char* substring(const char* source, int start, int end) {
     return result;
 }
 
-Token scannerAddTokenLiteral(Scanner* scanner, TokenType tokenType, const char* literal) {
+Token scannerAddTokenLiteral(Scanner* scanner, TokenType tokenType, const char* literal, const char* err) {
     char* text = substring(scanner->source, scanner->start, scanner->current);
 
-    Token token = { .type = tokenType, .literalStr = literal, .lexeme = text, .line = scanner->line, .err = NULL };
+    Token token = { .type = tokenType, .literalStr = literal, .lexeme = text, .line = scanner->line, .err = err };
 
     return token;
 }
 
-Token scannerAddToken(Scanner* scanner, TokenType tokenType) {
-    return scannerAddTokenLiteral(scanner, tokenType, NULL);
+Token scannerAddToken(Scanner* scanner, TokenType tokenType, const char* err) {
+    return scannerAddTokenLiteral(scanner, tokenType, NULL, err);
 }
 
 Token scanToken(Scanner* scanner) {
@@ -103,16 +104,19 @@ Token scanToken(Scanner* scanner) {
     t.type = TOKEN_TYPE_INVALID;
 
     switch (c) {
-      case '(': t = scannerAddToken(scanner, TOKEN_TYPE_LEFT_PAREN); break;
-      case ')': t = scannerAddToken(scanner, TOKEN_TYPE_RIGHT_PAREN); break;
-      case '{': t = scannerAddToken(scanner, TOKEN_TYPE_LEFT_BRACE); break;
-      case '}': t = scannerAddToken(scanner, TOKEN_TYPE_RIGHT_BRACE); break;
-      case ',': t = scannerAddToken(scanner, TOKEN_TYPE_COMMA); break;
-      case '.': t = scannerAddToken(scanner, TOKEN_TYPE_DOT); break;
-      case '-': t = scannerAddToken(scanner, TOKEN_TYPE_MINUS); break;
-      case '+': t = scannerAddToken(scanner, TOKEN_TYPE_PLUS); break;
-      case ';': t = scannerAddToken(scanner, TOKEN_TYPE_SEMICOLON); break;
-      case '*': t = scannerAddToken(scanner, TOKEN_TYPE_STAR); break;
+      case '(': t = scannerAddToken(scanner, TOKEN_TYPE_LEFT_PAREN, ""); break;
+      case ')': t = scannerAddToken(scanner, TOKEN_TYPE_RIGHT_PAREN, ""); break;
+      case '{': t = scannerAddToken(scanner, TOKEN_TYPE_LEFT_BRACE, ""); break;
+      case '}': t = scannerAddToken(scanner, TOKEN_TYPE_RIGHT_BRACE, ""); break;
+      case ',': t = scannerAddToken(scanner, TOKEN_TYPE_COMMA, ""); break;
+      case '.': t = scannerAddToken(scanner, TOKEN_TYPE_DOT, ""); break;
+      case '-': t = scannerAddToken(scanner, TOKEN_TYPE_MINUS, ""); break;
+      case '+': t = scannerAddToken(scanner, TOKEN_TYPE_PLUS, ""); break;
+      case ';': t = scannerAddToken(scanner, TOKEN_TYPE_SEMICOLON, ""); break;
+      case '*': t = scannerAddToken(scanner, TOKEN_TYPE_STAR, ""); break;
+      default:
+        t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
+        break;
     }
 
     return t;
@@ -167,10 +171,9 @@ static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
         PyDict_SetItemString(py_token, "inputChar", PyLong_FromUnsignedLong(token.inputChar));
         PyDict_SetItemString(py_token, "line", PyLong_FromSize_t(token.line));
 
-        // PyDict_SetItemString(py_token, "err", PyUnicode_FromString(t.err));
-        // PyDict_SetItemString(py_token, "err", Py_None);
+        PyDict_SetItemString(py_token, "err", PyUnicode_FromString(token.err));
 
-        PyList_SET_ITEM(py_list, i, py_token);  // steals ref to py_token
+        PyList_SET_ITEM(py_list, i, py_token);
 
         ++i;
 
