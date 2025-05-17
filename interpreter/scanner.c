@@ -69,6 +69,14 @@ int scannerMatch(Scanner* scanner, char expected) {
     return 1;
 }
 
+char scannerPeek(Scanner scanner) {
+    if (scannerIsAtEnd(scanner)) {
+        return '\0';
+    }
+
+    return scanner.source[scanner.current];
+}
+
 void printToken(Token token) {
     printf("Token {\n");
     printf("  type: %d\n", token.type);
@@ -139,6 +147,15 @@ Token scanToken(Scanner* scanner) {
           break;
       case '>':
           t = scannerAddToken(scanner, scannerMatch(scanner, '=') ? TOKEN_TYPE_GREATER_EQUAL : TOKEN_TYPE_GREATER, "");
+          break;
+      case '/':
+          if (scannerMatch(scanner, '/')) {
+            while (scannerPeek(*scanner) != '\n' && ! scannerIsAtEnd(*scanner)) {
+                scannerAdvance(scanner);
+            }
+          } else {
+            t = scannerAddToken(scanner, TOKEN_TYPE_SLASH, "");
+          }
           break;
       default:
         t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
