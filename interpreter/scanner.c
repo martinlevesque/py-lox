@@ -55,6 +55,28 @@ char scannerAdvance(Scanner* scanner) {
     return scanner->source[scanner->current++];
 }
 
+int scannerMatch(Scanner* scanner, char expected) {
+    if (scannerIsAtEnd(*scanner)) {
+        return 0;
+    }
+
+    if (scanner->source[scanner->current] != expected) {
+        return 0;
+    }
+
+    ++scanner->current;
+
+    return 1;
+}
+
+char scannerPeek(Scanner scanner) {
+    if (scannerIsAtEnd(scanner)) {
+        return '\0';
+    }
+
+    return scanner.source[scanner.current];
+}
+
 void printToken(Token token) {
     printf("Token {\n");
     printf("  type: %d\n", token.type);
@@ -114,6 +136,27 @@ Token scanToken(Scanner* scanner) {
       case '+': t = scannerAddToken(scanner, TOKEN_TYPE_PLUS, ""); break;
       case ';': t = scannerAddToken(scanner, TOKEN_TYPE_SEMICOLON, ""); break;
       case '*': t = scannerAddToken(scanner, TOKEN_TYPE_STAR, ""); break;
+      case '!':
+          t = scannerAddToken(scanner, scannerMatch(scanner, '=') ? TOKEN_TYPE_BANG_EQUAL : TOKEN_TYPE_BANG, "");
+          break;
+      case '=':
+          t = scannerAddToken(scanner, scannerMatch(scanner, '=') ? TOKEN_TYPE_EQUAL_EQUAL : TOKEN_TYPE_EQUAL, "");
+          break;
+      case '<':
+          t = scannerAddToken(scanner, scannerMatch(scanner, '=') ? TOKEN_TYPE_LESS_EQUAL : TOKEN_TYPE_LESS, "");
+          break;
+      case '>':
+          t = scannerAddToken(scanner, scannerMatch(scanner, '=') ? TOKEN_TYPE_GREATER_EQUAL : TOKEN_TYPE_GREATER, "");
+          break;
+      case '/':
+          if (scannerMatch(scanner, '/')) {
+            while (scannerPeek(*scanner) != '\n' && ! scannerIsAtEnd(*scanner)) {
+                scannerAdvance(scanner);
+            }
+          } else {
+            t = scannerAddToken(scanner, TOKEN_TYPE_SLASH, "");
+          }
+          break;
       default:
         t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
         break;
