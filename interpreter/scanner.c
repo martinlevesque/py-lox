@@ -157,6 +157,15 @@ Token scanToken(Scanner* scanner) {
             t = scannerAddToken(scanner, TOKEN_TYPE_SLASH, "");
           }
           break;
+      case ' ':
+      case '\r':
+      case '\t':
+          t.type = TOKEN_TYPE_NONE;
+          break;
+      case '\n':
+        t.type = TOKEN_TYPE_NONE;
+        scanner->line++;
+        break;
       default:
         t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
         break;
@@ -197,7 +206,7 @@ static PyObject* scanner_scan_tokens(PyObject* self, PyObject* args) {
 
         Token token = scanToken(&scanner);
 
-        if (token.type == TOKEN_TYPE_INVALID) {
+        if (token.type == TOKEN_TYPE_INVALID || token.type == TOKEN_TYPE_NONE) {
             continue;
         }
 
