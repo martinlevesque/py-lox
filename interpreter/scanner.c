@@ -25,6 +25,7 @@ typedef enum TokenType {
     TOKEN_TYPE_BANG,
     TOKEN_TYPE_SPACE,
     TOKEN_TYPE_TAB,
+    TOKEN_TYPE_STRING,
     TOKEN_TYPE_INVALID,
     TOKEN_TYPE_NONE,
     TOKEN_TYPE_EOF
@@ -119,6 +120,27 @@ Token scannerAddToken(Scanner* scanner, TokenType tokenType, const char* err) {
     return scannerAddTokenLiteral(scanner, tokenType, NULL, err);
 }
 
+Token readString(Scanner* scanner) {
+    while (scannerPeek(*scanner) != '"' && !scannerIsAtEnd(*scanner)) {
+        if (scannerPeek(*scanner) == '\n') {
+            scanner->line++;
+        }
+
+        scannerAdvance(scanner);
+    }
+
+    if (scannerIsAtEnd(*scanner)) {
+        return scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unterminated string.");
+    }
+
+    // The closing "
+    scannerAdvance(scanner);
+
+    char* value = substring(scanner->source, scanner->start + 1, scanner->current - 1);
+
+    return scannerAddTokenLiteral(scanner, TOKEN_TYPE_STRING, value, "");
+}
+
 Token scanToken(Scanner* scanner) {
     char c = scannerAdvance(scanner);
 
@@ -156,6 +178,10 @@ Token scanToken(Scanner* scanner) {
           } else {
             t = scannerAddToken(scanner, TOKEN_TYPE_SLASH, "");
           }
+          break;
+      case '"':
+          t = readString(scanner);
+
           break;
       case ' ':
       case '\r':
