@@ -3,7 +3,7 @@ import time
 
 import scanner
 
-# https://craftinginterpreters.com/scanning.html#string-literals
+# https://craftinginterpreters.com/scanning.html#number-literals
 
 
 class Interpreter:
