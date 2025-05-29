@@ -3,7 +3,7 @@ import time
 
 import scanner
 
-# https://craftinginterpreters.com/scanning.html#string-literals
+# https://craftinginterpreters.com/scanning.html#number-literals
 
 
 class Interpreter:
@@ -11,9 +11,7 @@ class Interpreter:
         self.has_error: bool = False
 
     def run(self, content: str):
-        t1 = time.time()
         tokens: list = scanner.scan_tokens(content)
-        t2 = time.time()
 
         for token in tokens:
             if token["err"]:
