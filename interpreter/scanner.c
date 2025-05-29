@@ -26,6 +26,7 @@ typedef enum TokenType {
     TOKEN_TYPE_SPACE,
     TOKEN_TYPE_TAB,
     TOKEN_TYPE_STRING,
+    TOKEN_TYPE_NUMBER,
     TOKEN_TYPE_INVALID,
     TOKEN_TYPE_NONE,
     TOKEN_TYPE_EOF
@@ -78,6 +79,14 @@ char scannerPeek(Scanner scanner) {
     return scanner.source[scanner.current];
 }
 
+char scannerPeekNext(Scanner scanner) {
+    if (scanner.current + 1 >= strlen(scanner.source)) {
+        return '\0';
+    }
+
+    return scanner.source[scanner.current + 1];
+}
+
 void printToken(Token token) {
     printf("Token {\n");
     printf("  type: %d\n", token.type);
@@ -88,6 +97,10 @@ void printToken(Token token) {
     printf("  err: \"%s\"\n", token.err ? token.err : "NULL");
     printf("}\n");
     fflush(stdout);
+}
+
+int scannerIsDigit(char c) {
+    return c >= '0' && c <= '9';
 }
 
 char* substring(const char* source, int start, int end) {
@@ -139,6 +152,24 @@ Token readString(Scanner* scanner) {
     char* value = substring(scanner->source, scanner->start + 1, scanner->current - 1);
 
     return scannerAddTokenLiteral(scanner, TOKEN_TYPE_STRING, value, "");
+}
+
+Token readNumber(Scanner* scanner) {
+    while (scannerIsDigit(scannerPeek(*scanner))) {
+        scannerAdvance(scanner);
+    }
+
+    if (scannerPeek(*scanner) == '.' && scannerIsDigit(scannerPeekNext(*scanner))) {
+        scannerAdvance(scanner);
+
+        while (scannerIsDigit(scannerPeek(*scanner))) {
+            scannerAdvance(scanner);
+        }
+    }
+
+    char* textNumber = substring(scanner->source, scanner->start, scanner->current);
+
+    return scannerAddTokenLiteral(scanner, TOKEN_TYPE_NUMBER, textNumber, "");
 }
 
 Token scanToken(Scanner* scanner) {
@@ -193,7 +224,11 @@ Token scanToken(Scanner* scanner) {
         scanner->line++;
         break;
       default:
-        t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
+        if (scannerIsDigit(c)) {
+            t = readNumber(scanner);
+        } else {
+            t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
+        }
         break;
     }
 
