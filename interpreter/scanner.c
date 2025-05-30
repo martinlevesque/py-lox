@@ -27,6 +27,23 @@ typedef enum TokenType {
     TOKEN_TYPE_TAB,
     TOKEN_TYPE_STRING,
     TOKEN_TYPE_NUMBER,
+    TOKEN_TYPE_IDENTIFIER,
+    TOKEN_TYPE_AND,
+    TOKEN_TYPE_CLASS,
+    TOKEN_TYPE_ELSE,
+    TOKEN_TYPE_FALSE,
+    TOKEN_TYPE_FOR,
+    TOKEN_TYPE_FUN,
+    TOKEN_TYPE_IF,
+    TOKEN_TYPE_NIL,
+    TOKEN_TYPE_OR,
+    TOKEN_TYPE_PRINT,
+    TOKEN_TYPE_RETURN,
+    TOKEN_TYPE_SUPER,
+    TOKEN_TYPE_THIS,
+    TOKEN_TYPE_TRUE,
+    TOKEN_TYPE_VAR,
+    TOKEN_TYPE_WHILE,
     TOKEN_TYPE_INVALID,
     TOKEN_TYPE_NONE,
     TOKEN_TYPE_EOF
@@ -103,6 +120,16 @@ int scannerIsDigit(char c) {
     return c >= '0' && c <= '9';
 }
 
+int scannerIsAlpha(char c) {
+    return (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z') ||
+           c == '_';
+}
+
+int scannerIsAlphaNumeric(char c) {
+    return scannerIsAlpha(c) || scannerIsDigit(c);
+}
+
 char* substring(const char* source, int start, int end) {
     if (start < 0 || end <= start || end > strlen(source)) {
         return NULL; // invalid indices
@@ -172,6 +199,40 @@ Token readNumber(Scanner* scanner) {
     return scannerAddTokenLiteral(scanner, TOKEN_TYPE_NUMBER, textNumber, "");
 }
 
+TokenType scannerDetermineTokenType(const char* identifierText) {
+    if (strcmp(identifierText, "and") == 0) return TOKEN_TYPE_AND;
+    if (strcmp(identifierText, "class") == 0) return TOKEN_TYPE_CLASS;
+    if (strcmp(identifierText, "else") == 0) return TOKEN_TYPE_ELSE;
+    if (strcmp(identifierText, "false") == 0) return TOKEN_TYPE_FALSE;
+    if (strcmp(identifierText, "for") == 0) return TOKEN_TYPE_FOR;
+    if (strcmp(identifierText, "fun") == 0) return TOKEN_TYPE_FUN;
+    if (strcmp(identifierText, "if") == 0) return TOKEN_TYPE_IF;
+    if (strcmp(identifierText, "nil") == 0) return TOKEN_TYPE_NIL;
+    if (strcmp(identifierText, "or") == 0) return TOKEN_TYPE_OR;
+    if (strcmp(identifierText, "print") == 0) return TOKEN_TYPE_PRINT;
+    if (strcmp(identifierText, "return") == 0) return TOKEN_TYPE_RETURN;
+    if (strcmp(identifierText, "super") == 0) return TOKEN_TYPE_SUPER;
+    if (strcmp(identifierText, "this") == 0) return TOKEN_TYPE_THIS;
+    if (strcmp(identifierText, "true") == 0) return TOKEN_TYPE_TRUE;
+    if (strcmp(identifierText, "var") == 0) return TOKEN_TYPE_VAR;
+    if (strcmp(identifierText, "while") == 0) return TOKEN_TYPE_WHILE;
+
+    return TOKEN_TYPE_IDENTIFIER; // Default case
+}
+
+Token scannerIdentifier(Scanner* scanner) {
+    while (scannerIsAlphaNumeric(scannerPeek(*scanner))) {
+        scannerAdvance(scanner);
+    }
+
+    char* identifierText = substring(scanner->source, scanner->start, scanner->current);
+
+    TokenType type = scannerDetermineTokenType(identifierText);
+    free(identifierText);
+
+    return scannerAddToken(scanner, type, "");
+}
+
 Token scanToken(Scanner* scanner) {
     char c = scannerAdvance(scanner);
 
@@ -226,6 +287,8 @@ Token scanToken(Scanner* scanner) {
       default:
         if (scannerIsDigit(c)) {
             t = readNumber(scanner);
+        } else if (scannerIsAlpha(c)) {
+            t = scannerIdentifier(scanner);
         } else {
             t = scannerAddToken(scanner, TOKEN_TYPE_ERR, "Unexpected character.");
         }
