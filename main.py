@@ -1,7 +1,8 @@
 import sys
-import time
 
 import scanner
+from syntax_tree.grouping_expr import GroupingExpr
+from interpreter import token
 
 # https://craftinginterpreters.com/scanning.html#number-literals
 
@@ -9,15 +10,20 @@ import scanner
 class Interpreter:
     def __init__(self):
         self.has_error: bool = False
+        ex = GroupingExpr()
+        ex.toto()
+        ex.todo()
 
     def run(self, content: str):
         tokens: list = scanner.scan_tokens(content)
 
-        for token in tokens:
-            if token["err"]:
-                print(f"err -> {token}")
+        for t in tokens:
+            if t["err"]:
+                print(f"err -> {t}")
             else:
-                print(f"{token}")
+                print(f"{t}")
+                tt = token.load_token(t)
+                print(f"tt -> {tt}")
 
     def run_file(self, filename: str):
         with open(filename, "r") as file:
