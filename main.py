@@ -1,18 +1,35 @@
 import sys
 
 import scanner
+
+from interpreter.token import Token, TokenType
+from syntax_tree.ast_printer import AstPrinter
+from syntax_tree.binary_expr import BinaryExpr
 from syntax_tree.grouping_expr import GroupingExpr
+from syntax_tree.literal_expr import LiteralExpr
+from syntax_tree.unary_expr import UnaryExpr
 from interpreter import token
 
-# https://craftinginterpreters.com/scanning.html#number-literals
+# https://craftinginterpreters.com/representing-code.html#top
 
 
 class Interpreter:
     def __init__(self):
         self.has_error: bool = False
-        ex = GroupingExpr()
-        ex.toto()
-        ex.todo()
+
+        ex = BinaryExpr(
+            operator=Token(type=TokenType.TOKEN_TYPE_MINUS, lexeme="-", line=1),
+            left=LiteralExpr(
+                literal=Token(type=TokenType.TOKEN_TYPE_NUMBER, lexeme="155", line=1)
+            ),
+            right=LiteralExpr(
+                literal=Token(type=TokenType.TOKEN_TYPE_NUMBER, lexeme="154", line=1)
+            ),
+        )
+        ast_print = AstPrinter()
+        result = ast_print.print(ex)
+
+        print(result)
 
     def run(self, content: str):
         tokens: list = scanner.scan_tokens(content)
