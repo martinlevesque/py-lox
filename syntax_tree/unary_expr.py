@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 
 from interpreter.token import Token
-from syntax_tree.expr import Expr
+from syntax_tree.expr import Expr, parenthesize
 
 
 @dataclass
 class UnaryExpr(Expr):
     operator: Token
-    expr: Expr
+    expression: Expr
+
+    def accept(self) -> str:
+        return parenthesize(self.operator.lexeme, [self.expression])
