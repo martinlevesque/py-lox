@@ -4,3 +4,6 @@ compile:
 
 dev:
 	find interpreter/ -name '*.c' | entr -d make compile;
+
+test: compile
+	PYTHONPATH=. pytest

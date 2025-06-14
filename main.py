@@ -4,7 +4,7 @@ import scanner
 
 from interpreter import token
 
-# https://craftinginterpreters.com/representing-code.html#top
+# https://craftinginterpreters.com/parsing-expressions.html
 
 
 class Interpreter:

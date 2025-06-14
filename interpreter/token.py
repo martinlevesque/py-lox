@@ -1,8 +1,13 @@
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import IntEnum, auto
 
 
-class TokenType(Enum):
+class AutoEnum(IntEnum):
+    def _generate_next_value_(name, start, count, last_values):
+        return count  # count starts at 0
+
+
+class TokenType(AutoEnum):
     TOKEN_TYPE_ERR = auto()
     TOKEN_TYPE_LEFT_PAREN = auto()
     TOKEN_TYPE_RIGHT_PAREN = auto()
