@@ -12,3 +12,11 @@ def test_scanner_simple_operators():
     assert TokenType(result[1]["type"]) == TokenType.TOKEN_TYPE_MINUS
     assert result[1]["lexeme"] == "-"
     assert result[1]["err"] == ""
+
+
+def test_scanner_number():
+    result = scanner.scan_tokens("1234.34")
+    assert len(result) == 1
+    assert TokenType(result[0]["type"]) == TokenType.TOKEN_TYPE_NUMBER
+    assert result[0]["lexeme"] == "1234.34"
+    assert result[0]["err"] == ""
