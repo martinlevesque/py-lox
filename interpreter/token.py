@@ -3,6 +3,7 @@ from enum import IntEnum, auto
 
 
 class AutoEnum(IntEnum):
+    @staticmethod
     def _generate_next_value_(name, start, count, last_values):
         return count  # count starts at 0
 
