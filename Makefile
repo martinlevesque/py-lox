@@ -7,3 +7,6 @@ dev:
 
 test: compile
 	PYTHONPATH=. pytest
+
+test-watch:
+	find ./ -name '*.c' -o -name '*.py' | entr -d sh -c 'black . && make test'
