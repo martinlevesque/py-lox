@@ -71,3 +71,22 @@ def test_check_is_eq():
     parser = Parser(tokens=tokens)
 
     assert parser.check(TokenType.TOKEN_TYPE_PLUS)
+
+
+# match
+
+
+def test_match_is_currently_type():
+    tokens = sample_tokens()
+    parser = Parser(tokens=tokens)
+
+    assert parser.match([TokenType.TOKEN_TYPE_PLUS])
+    assert parser.current == 1
+
+
+def test_match_is_not_currently_type():
+    tokens = sample_tokens()
+    parser = Parser(tokens=tokens)
+
+    assert not parser.match([TokenType.TOKEN_TYPE_MINUS])
+    assert parser.current == 0

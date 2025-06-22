@@ -13,6 +13,15 @@ class Parser:
         # TODO
         return Expr()
 
+    # consumes the token if it is one of the types specified
+    def match(self, types: list[TokenType]) -> bool:
+        for t in types:
+            if self.check(t):
+                self.advance()
+                return True
+
+        return False
+
     def peek(self) -> Token:
         return self.tokens[self.current]
 
@@ -28,6 +37,7 @@ class Parser:
 
         return self.previous()
 
+    # true if the current token is of a given type
     def check(self, type: TokenType) -> bool:
         if self.isAtEnd():
             return False
