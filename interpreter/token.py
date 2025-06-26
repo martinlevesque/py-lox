@@ -61,6 +61,7 @@ class Token:
     type: TokenType
     lexeme: str
     line: int
+    literal: str | None = None
 
 
 def load_token(hash_input: dict) -> Token:
@@ -68,4 +69,5 @@ def load_token(hash_input: dict) -> Token:
         type=TokenType(hash_input["type"]),
         lexeme=hash_input["lexeme"],
         line=hash_input["line"],
+        literal=hash_input["literalStr"],
     )

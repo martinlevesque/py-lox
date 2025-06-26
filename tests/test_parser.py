@@ -1,5 +1,6 @@
 from parser.parser import Parser
 from interpreter.token import Token, TokenType
+from syntax_tree.literal_expr import LiteralExpr
 
 
 def sample_tokens():
@@ -21,7 +22,7 @@ def test_parser_init():
 # peek
 
 
-def test_peek():
+def test_parser_peek():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
 
@@ -31,7 +32,7 @@ def test_peek():
 # previous
 
 
-def test_previous():
+def test_parser_previous():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
     parser.advance()
@@ -42,13 +43,13 @@ def test_previous():
 # is_at_end
 
 
-def test_is_at_end_when_not_at_end():
+def test_parser_is_at_end_when_not_at_end():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
     assert not parser.isAtEnd()
 
 
-def test_is_at_end_when_at_end():
+def test_parser_is_at_end_when_at_end():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
     parser.advance()
@@ -59,14 +60,14 @@ def test_is_at_end_when_at_end():
 # check
 
 
-def test_check_when_diff():
+def test_parser_check_when_diff():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
 
     assert not parser.check(TokenType.TOKEN_TYPE_MINUS)
 
 
-def test_check_is_eq():
+def test_parser_check_is_eq():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
 
@@ -76,7 +77,7 @@ def test_check_is_eq():
 # match
 
 
-def test_match_is_currently_type():
+def test_parser_match_is_currently_type():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
 
@@ -84,9 +85,90 @@ def test_match_is_currently_type():
     assert parser.current == 1
 
 
-def test_match_is_not_currently_type():
+def test_parser_match_is_not_currently_type():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
 
     assert not parser.match([TokenType.TOKEN_TYPE_MINUS])
     assert parser.current == 0
+
+
+# primary
+
+
+def test_parser_primary_when_false():
+    tokens = []
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_FALSE, line=1, lexeme="false"))
+    parser = Parser(tokens=tokens)
+
+    result = parser.primary()
+
+    if not result:
+        assert False
+
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_FALSE
+
+
+def test_parser_primary_when_true():
+    tokens = []
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_TRUE, line=1, lexeme="true"))
+    parser = Parser(tokens=tokens)
+
+    result = parser.primary()
+
+    if not result:
+        assert False
+
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_TRUE
+
+
+def test_parser_primary_when_nil():
+    tokens = []
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_NIL, line=1, lexeme="nil"))
+    parser = Parser(tokens=tokens)
+
+    result = parser.primary()
+
+    if not result:
+        assert False
+
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_NIL
+
+
+def test_parser_primary_when_number():
+    tokens = []
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_NUMBER, line=1, lexeme="45.6", literal="45.6")
+    )
+    parser = Parser(tokens=tokens)
+
+    result = parser.primary()
+
+    if not result:
+        assert False
+
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_NUMBER
+    assert result.literal.literal == "45.6"
+
+
+def test_parser_primary_when_string():
+    tokens = []
+    tokens.append(
+        Token(
+            type=TokenType.TOKEN_TYPE_STRING, line=1, lexeme='"hello"', literal="hello"
+        )
+    )
+    parser = Parser(tokens=tokens)
+
+    result = parser.primary()
+
+    if not result:
+        assert False
+
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_STRING
+    assert result.literal.literal == "hello"

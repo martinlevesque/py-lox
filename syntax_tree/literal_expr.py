@@ -13,3 +13,10 @@ class LiteralExpr(Expr):
             return "nil"
         else:
             return str(self.literal.lexeme)
+
+
+def literal(
+    type: TokenType = TokenType.TOKEN_TYPE_INVALID, value: str = "", line: int = 1
+) -> LiteralExpr:
+    literal_token = Token(type=type, lexeme=str(value), literal=str(value), line=line)
+    return LiteralExpr(literal=literal_token)
