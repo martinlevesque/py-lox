@@ -1,8 +1,16 @@
-from xmlrpc.client import boolean
 from dataclasses import dataclass
 from interpreter.token import Token, TokenType
+from syntax_tree.grouping_expr import GroupingExpr
 from syntax_tree.literal_expr import literal
 from syntax_tree.expr import Expr
+import sys
+
+
+class ParseError(Exception):
+    """Custom exception for parsing errors."""
+
+    def __init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -43,6 +51,25 @@ class Parser:
 
         return self.previous()
 
+    @staticmethod
+    def error(token: Token, message: str) -> ParseError:
+        if token.type == TokenType.TOKEN_TYPE_EOF:
+            print(f"[{token.line}] at end, {message}", file=sys.stderr, flush=True)
+        else:
+            print(
+                f"[{token.line}] at '{token.lexeme}' {message}",
+                file=sys.stderr,
+                flush=True,
+            )
+
+        return ParseError()
+
+    def consume(self, type: TokenType, message: str) -> Token:
+        if self.check(type):
+            return self.advance()
+
+        raise Parser.error(self.peek(), message)
+
     # true if the current token is of a given type
     def check(self, type: TokenType) -> bool:
         if self.isAtEnd():
@@ -79,6 +106,11 @@ class Parser:
                 line=self.current_line,
             )
 
-        # todo
+        if self.match([TokenType.TOKEN_TYPE_LEFT_PAREN]):
+            expr: Expr = self.expression()
+            self.consume(
+                TokenType.TOKEN_TYPE_RIGHT_PAREN, "Expect ') after expression."
+            )
+            return GroupingExpr(expression=expr)
 
         return None

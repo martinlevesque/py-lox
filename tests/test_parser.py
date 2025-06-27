@@ -1,6 +1,7 @@
-from parser.parser import Parser
+from parser.parser import Parser, ParseError
 from interpreter.token import Token, TokenType
 from syntax_tree.literal_expr import LiteralExpr
+import pytest
 
 
 def sample_tokens():
@@ -172,3 +173,23 @@ def test_parser_primary_when_string():
     assert type(result) == LiteralExpr
     assert result.literal.type == TokenType.TOKEN_TYPE_STRING
     assert result.literal.literal == "hello"
+
+
+# consume
+
+
+def test_parser_consume_happy_path():
+    tokens = sample_tokens()
+    parser = Parser(tokens=tokens)
+
+    result: Token = parser.consume(TokenType.TOKEN_TYPE_PLUS, "expecting plus")
+
+    assert result.type == TokenType.TOKEN_TYPE_PLUS
+
+
+def test_parser_consume_diff_token():
+    tokens = sample_tokens()
+    parser = Parser(tokens=tokens)
+
+    with pytest.raises(ParseError):
+        parser.consume(TokenType.TOKEN_TYPE_EOF, "invalid")
