@@ -47,7 +47,7 @@ def test_parser_previous():
 def test_parser_is_at_end_when_not_at_end():
     tokens = sample_tokens()
     parser = Parser(tokens=tokens)
-    assert not parser.isAtEnd()
+    assert not parser.is_at_end()
 
 
 def test_parser_is_at_end_when_at_end():
@@ -55,7 +55,7 @@ def test_parser_is_at_end_when_at_end():
     parser = Parser(tokens=tokens)
     parser.advance()
     parser.advance()
-    assert parser.isAtEnd()
+    assert parser.is_at_end()
 
 
 # check
