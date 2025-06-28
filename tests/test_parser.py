@@ -1,5 +1,7 @@
 from parser.parser import Parser, ParseError
 from interpreter.token import Token, TokenType
+from syntax_tree.ast_printer import AstPrinter
+from syntax_tree.unary_expr import UnaryExpr
 from syntax_tree.literal_expr import LiteralExpr
 import pytest
 
@@ -193,3 +195,55 @@ def test_parser_consume_diff_token():
 
     with pytest.raises(ParseError):
         parser.consume(TokenType.TOKEN_TYPE_EOF, "invalid")
+
+
+# parse
+
+
+def test_parser_parse_simple_literal():
+    tokens = []
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_NUMBER, line=1, lexeme="55", literal="55")
+    )
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_EOF, line=1, lexeme=""))
+
+    parser = Parser(tokens=tokens)
+
+    result = parser.parse()
+
+    assert result is not None
+    assert type(result) == LiteralExpr
+    assert result.literal.type == TokenType.TOKEN_TYPE_NUMBER
+    assert result.literal.literal == "55"
+
+
+def test_parser_parse_unary_group():
+    # -(10 + 5)
+    tokens = []
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_MINUS, line=1, lexeme="-"))
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_LEFT_PAREN, line=1, lexeme="", literal="")
+    )
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_NUMBER, line=1, lexeme="10", literal="10")
+    )
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_PLUS, line=1, lexeme="+"))
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_NUMBER, line=1, lexeme="5", literal="5")
+    )
+    tokens.append(
+        Token(type=TokenType.TOKEN_TYPE_RIGHT_PAREN, line=1, lexeme="", literal="")
+    )
+    tokens.append(Token(type=TokenType.TOKEN_TYPE_EOF, line=1, lexeme=""))
+
+    parser = Parser(tokens=tokens)
+
+    result = parser.parse()
+
+    assert result is not None
+    assert type(result) == UnaryExpr
+
+    ast_printer = AstPrinter()
+    ast_str = ast_printer.print(result)
+
+    assert ast_str == "(- (group (+ 10 5)))"
