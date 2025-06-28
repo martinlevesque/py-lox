@@ -3,8 +3,10 @@ import sys
 import scanner
 
 from interpreter import token
+from syntax_tree.expr import Expr
+from parser.parser import Parser
 
-# https://craftinginterpreters.com/representing-code.html#top
+# https://craftinginterpreters.com/parsing-expressions.html
 
 
 class Interpreter:
@@ -12,15 +14,23 @@ class Interpreter:
         self.has_error: bool = False
 
     def run(self, content: str):
-        tokens: list = scanner.scan_tokens(content)
+        raw_tokens: list = scanner.scan_tokens(content)
 
-        for t in tokens:
+        for t in raw_tokens:
             if t["err"]:
                 print(f"err -> {t}")
             else:
                 print(f"{t}")
                 tt = token.load_token(t)
                 print(f"tt -> {tt}")
+
+        tokens = [token.load_token(t) for t in raw_tokens]
+
+        parser: Parser = Parser(tokens)
+        expression: Expr | None = parser.parse()
+
+        if expression:
+            print(expression)
 
     def run_file(self, filename: str):
         with open(filename, "r") as file:

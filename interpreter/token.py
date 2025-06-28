@@ -1,8 +1,14 @@
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import IntEnum, auto
 
 
-class TokenType(Enum):
+class AutoEnum(IntEnum):
+    @staticmethod
+    def _generate_next_value_(name, start, count, last_values):
+        return count  # count starts at 0
+
+
+class TokenType(AutoEnum):
     TOKEN_TYPE_ERR = auto()
     TOKEN_TYPE_LEFT_PAREN = auto()
     TOKEN_TYPE_RIGHT_PAREN = auto()
@@ -55,6 +61,7 @@ class Token:
     type: TokenType
     lexeme: str
     line: int
+    literal: str | None = None
 
 
 def load_token(hash_input: dict) -> Token:
@@ -62,4 +69,5 @@ def load_token(hash_input: dict) -> Token:
         type=TokenType(hash_input["type"]),
         lexeme=hash_input["lexeme"],
         line=hash_input["line"],
+        literal=hash_input["literalStr"],
     )
